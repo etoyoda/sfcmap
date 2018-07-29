@@ -88,6 +88,7 @@ function addmap(mapctx, url, vname) {
 
 function winddata(mapctx, xhr) {
   var data = JSON.parse(xhr.responseText);
+  var tl = 'Wind 925hPa ' + data.reftime.replace(/\d\d\d\d-\d\d-|:\d\d:\d\d/g, '');
   var ly = L.layerGroup([]);
   var levdb = data.isobar925;
   for (var stnid in levdb.data) {
@@ -106,7 +107,7 @@ function winddata(mapctx, xhr) {
     L.marker([tup.lat, tup.lon], opt).bindPopup(ptx).addTo(ly);
   }
   ly.addTo(mapctx.map);
-  mapctx.ly.addOverlay(ly, 'wp 925hPa');
+  mapctx.ly.addOverlay(ly, tl);
 }
 
 function addwind(mapctx) {
