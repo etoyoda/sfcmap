@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+ taken from Japan Meteorological Agency's website under their license
+ http://www.jma.go.jp/jma/kishou/info/coment.html which is compatible to
+ CC-BY 3.0.
+-->
 <Report xmlns:jmx="http://xml.kishou.go.jp/jmaxml1/" xmlns="http://xml.kishou.go.jp/jmaxml1/" xmlns:jmx_add="http://xml.kishou.go.jp/jmaxml1/addition1/">
     <Control>
         <Title>アジア太平洋海上悪天４８時間予想図</Title>
