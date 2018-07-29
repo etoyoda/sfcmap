@@ -86,6 +86,40 @@ function addmap(mapctx, url, vname) {
   xhr.addEventListener("load", function() { mapdata(mapctx, xhr, vname); });
 }
 
+function winddata(mapctx, xhr) {
+  var data = JSON.parse(xhr.responseText);
+  var ly = L.layerGroup([]);
+  var levdb = data.isobar925;
+  for (var stnid in levdb.data) {
+    var tup = levdb.data[stnid];
+    var dd = Math.floor((tup.dd + 5) / 10);
+    if (dd == 0) { dd = 36; }
+    var ff = Math.floor((tup.ff + 1.25) / 2.5) * 5;
+    if ((ff == 0) && (tup.ff > 0.5)) { ff = 5; }
+    if (ff == 0) { dd = 0; }
+    var bn = 'd' + dd + 'f' + ff + '.png';
+    var url = 'http://toyoda-eizi.net/2018/wxsymbols/img/' + bn;
+    var ic = L.icon({iconUrl: url, iconSize: [64, 64], iconAnchor: [32, 32]});
+    var opt = {icon: ic, title: bn};
+    var ptx = '<p>Station <a href="http://www.jma.go.jp/jp/windpro/{stnid}.html">{stnid}</a>';
+    ptx = ptx.replace(/{stnid}/g, stnid);
+    L.marker([tup.lat, tup.lon], opt).bindPopup(ptx).addTo(ly);
+  }
+  ly.addTo(mapctx.map);
+  mapctx.ly.addOverlay(ly, 'wp 925hPa');
+}
+
+function addwind(mapctx) {
+  var xhr = new XMLHttpRequest();
+  var url = 'http://toyoda-eizi.net/2018/uppermaps/wpjp.json';
+  xhr.open('GET', url);
+  if (navigator.userAgent.indexOf('Trident') == -1) {
+    xhr.responseType = 'text';
+  }
+  xhr.send();
+  xhr.addEventListener("load", function() { winddata(mapctx, xhr); });
+}
+
 function filelist(mapctx, xhr) {
   var msg = document.getElementById('msg');
   var response = JSON.parse(xhr.responseText);
@@ -106,6 +140,13 @@ function filelist(mapctx, xhr) {
     elb.innerText = vnam;
     pane.appendChild(elb);
   }
+  let pfb = document.createElement('button');
+  pfb.addEventListener('click', function (){
+    addwind(mapctx);
+    pfb.disabled = true;
+  });
+  pfb.innerText = 'wp wind 925hPa';
+  pane.appendChild(pfb);
   msg.innerText = 'Choose buttons:';
 }
 
