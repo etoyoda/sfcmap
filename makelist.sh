@@ -16,6 +16,7 @@ do
     btutc=$(ruby -rtime -e 'puts Time.parse(ARGV.first).utc.strftime("%Y-%m-%dT%H")' $btime)
     hdr=$(echo $json | sed 's/.*-//; s/\.json//')
     case $hdr in
+    VZSA50) hdr=SPAS;;
     VZSA60) hdr=ASAS;;
     VZSF60) hdr=FSAS24;;
     VZSF61) hdr=FSAS48;;

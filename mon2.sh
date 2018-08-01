@@ -4,7 +4,7 @@ export LANG=en_US.UTF-8
 export TZ=JST-9
 cd $(/usr/bin/dirname $0)
 :
-items="VZSA60 VZSF60 VZSF61"
+items="VZSA60 VZSF60 VZSF61 VZSA50"
 for item in $items
 do
   url="http://toyoda-eizi.net/pshbjmx/m1/${item}"
@@ -18,7 +18,12 @@ do
   do
     test X"$url" = X"stop" && break
     name=y$(echo ${date}T${time} | sed 's/-//g; s/:.*//')-${item}
-    if [ -f ${name}.json ]; then
+    case $name in
+    *T23-VZSA50|*T05-VZSA50|*T11-VZSA50|*T17-VZSA50)
+      touch ${name}.json.skip
+      ;;
+    esac
+    if [ -f ${name}.json -o -f ${name}.json.skip ]; then
       test ! -t 2 || echo ${name}.json present
     else
       test ! -t 2 || echo generating ${name}.json ....
