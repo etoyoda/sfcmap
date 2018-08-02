@@ -72,16 +72,18 @@ class App
 	  }
 	  stnid = h['stnid'] = h['@ID'].to_s
 	  next if stnid.empty?
-	  pos = name = hha = nil
-	  if @sdb[stnid] then
-	    pos = @sdb[stnid]['pos']
-	    name = @sdb[stnid]['name']
-	    hha = strtoi(@sdb[stnid]['h'])
+	  if stnid != 'SHIP' then
 	    if @duptab[stnid]
 	      $stderr.puts "station #{stnid} dup"
 	      next
 	    end
 	    @duptab[stnid] = 1
+	  end
+	  pos = name = hha = nil
+	  if @sdb[stnid] then
+	    pos = @sdb[stnid]['pos']
+	    name = @sdb[stnid]['name']
+	    hha = strtoi(@sdb[stnid]['h'])
 	  else
 	    hha = 0
 	    lat = strtoi(h['La.3'])

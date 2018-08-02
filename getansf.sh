@@ -40,7 +40,7 @@ set -x -v
 zip=$(sh -$- local-getzip.sh $yy $mm $dd $hh ansf)
 echo $yy $mm $dd $hh 00 > timecard.txt
 test ! -t 3 || echo unzip ... >&3
-unzip -c $zip A_S*_C_????_${yy}${mm}${dd}${hh}*.txt > ansf.txt
+unzip -c $zip A_S?????????${dd}${hh}*.txt > ansf.txt
 test ! -t 3 || echo decode WMO Codes ... >&3
 ruby ../detac.rb ansf.txt > ansf.ltsv
 vt="${yy}-${mm}-${dd}T${hh}:00:00Z"
