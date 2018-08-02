@@ -30,6 +30,7 @@ class App
   def latlon(la, lo)
     fla = nwsangle(la)
     flo = nwsangle(lo)
+    flo += 360 if flo and flo < 0
     return nil unless fla and flo
     [fla, flo]
   end
@@ -53,6 +54,13 @@ class App
     }
   end
 
+  def strtoi str
+    case str
+    when /^-?\d+$/ then str.to_i
+    else nil
+    end
+  end
+
   def detacload
     @detac.each {|detac|
       File.open(detac, "r") {|ifp|
@@ -64,28 +72,49 @@ class App
 	  }
 	  stnid = h['stnid'] = h['@ID'].to_s
 	  next if stnid.empty?
-	  unless @sdb[stnid]
-	    $stderr.puts "station #{stnid} missing"
-	    next
+	  pos = name = hha = nil
+	  if @sdb[stnid] then
+	    pos = @sdb[stnid]['pos']
+	    name = @sdb[stnid]['name']
+	    hha = strtoi(@sdb[stnid]['h'])
+	    if @duptab[stnid]
+	      $stderr.puts "station #{stnid} dup"
+	      next
+	    end
+	    @duptab[stnid] = 1
+	  else
+	    hha = 0
+	    lat = strtoi(h['La.3'])
+	    lon = strtoi(h['Lo.4'])
+	    unless lat and lon
+	      $stderr.puts "obs #{stnid} unlocatable"
+	      next
+	    end
+	    lat *= 0.1
+	    lon *= 0.1
+	    lon += 360 if lon < 0
+	    pos = [lat, lon]
+	    name = stnid
 	  end
-	  if @duptab[stnid]
-	    $stderr.puts "station #{stnid} dup"
-	    next
-	  end
-	  next unless /\d/ === h['dd']
+	  dd = strtoi(h['dd'])
+	  dd = nil if dd == 99 or dd == 90
+	  next unless dd
 	  r = {
 	    "type" => "Feature",
-	    "geometry" => { "type" => "Point", "coordinates" => @sdb[stnid]['pos'] },
+	    "geometry" => {
+	      "type" => "Point",
+	      "coordinates" => pos
+	    },
 	    "properties" => {
-	      "name" => @sdb[stnid]['name'],
-	      "dd" => h['dd'],
-	      "ff" => h['ff'],
-	      "N" => h['N'],
-	      "h" => @sdb[stnid]['h']
-	      }
+	      "stnid" => stnid,
+	      "name" => name,
+	      "dd" => dd,
+	      "ff" => strtoi(h['ff']),
+	      "N" => strtoi(h['N']),
+	      "h" => hha
 	    }
+	  }
 	  @result.push r
-	  @duptab[stnid] = 1
 	}
       }
     }
