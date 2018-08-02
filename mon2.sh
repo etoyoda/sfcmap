@@ -20,7 +20,7 @@ do
     name=y$(echo ${date}T${time} | sed 's/-//g; s/:.*//')-${item}
     case $name in
     *T23-VZSA50|*T05-VZSA50|*T11-VZSA50|*T17-VZSA50)
-      touch ${name}.json.skip
+      test ! -f ${name}.json.skip || touch ${name}.json.skip
       ;;
     esac
     if [ -f ${name}.json -o -f ${name}.json.skip ]; then
