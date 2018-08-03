@@ -1,4 +1,4 @@
-<html style="margin:0; padding:0">
+<html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>Surface analysis/forecast maps</title>
@@ -9,11 +9,21 @@
    integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log=="
    crossorigin=""></script>
 <style>
+html { margin:0; padding:0; }
+body { margin:0; padding:0; }
 div.diLA, div.diT, div.diTD, div.diL { color: red; font-size: 18pt; }
 div.diH { color: blue; font-size: 18pt; }
 div.diFOG { color: yellow; font-size: 18pt; }
 div.diICING { color: green; font-size: 18pt; }
 div.diSEAICE { color: green; font-size: 18pt; }
+div#headarea { margin:0; padding:0; width:100%; height:22px; }
+div#mapid { position:absolute; top:22px; left:0;
+  margin:0; padding:0; width:100%; height:95%; }
+div#plotmenu {
+  z-index:940; position:absolute; top:15%; left:10%; width:80%; }
+div#analmenu {
+  z-index:930; position:absolute; top:30%; left:8%; width:80%;  }
+.btn { padding: 4; }
 </style>
 <script type="text/javascript">
 function gjstyle(feature) {
@@ -131,8 +141,16 @@ function winddata(mapctx, xhr, tl) {
     if (ff == 0) { dd = 0; }
     var bn = 'd' + dd + 'f' + ff + '.png';
     var url = 'http://toyoda-eizi.net/2018/wxsymbols/img/' + bn;
-    var ic = L.icon({iconUrl: url, iconSize: [64, 64], iconAnchor: [32, 32]});
-    var opt = {icon: ic, title: bn};
+    var iopt = null;
+    if (tup.N) {
+      var sbn = 'n' + tup.N + '.png';
+      var surl = 'http://toyoda-eizi.net/2018/wxsymbols/img/' + sbn;
+      iopt = {iconUrl: surl, iconSize: [16, 16], iconAnchor: [8, 8],
+	shadowUrl: url, shadowSize: [64, 64], shadowAnchor: [32, 32] };
+    } else {
+      iopt = { iconUrl: url, iconSize: [64, 64], iconAnchor: [32, 32] };
+    }
+    var opt = {icon: L.icon(iopt), title: bn};
     var ptx = '<p>Station <a href="http://toyoda-eizi.net/wmo9/vola/idxnum/{stnid}">{stnid} ({name})</a><br>dd:{dd} ff:{ff} N:{N}';
     ptx = ptx.replace(/{(\w+)}/g, function(m,p1){ return tup[p1]; });
     let pos = stations[istn].geometry.coordinates;
@@ -166,11 +184,13 @@ function filelist(mapctx, xhr) {
   var msg = document.getElementById('msg');
   var response = JSON.parse(xhr.responseText);
   msg.innerText = 'mList loaded.';
-  var pane = document.getElementById('ctlpane');
+  var pane = document.getElementById('analmenu');
+  pane.style.display = 'none';
   for (jsfnam in response) {
     if (jsfnam == 'stop') break;
     // these MUST be let (block-local)
     let elb = document.createElement('button');
+    elb.setAttribute('class', 'btn');
     let vnam = response[jsfnam].replace(/\/\d\d\d\d-\d\d-/, ' ');
     let url = 'http://toyoda-eizi.net/2018/sfcmap/' + jsfnam;
     elb.addEventListener('click',
@@ -198,11 +218,13 @@ function obslist(mapctx, xhr) {
   var msg = document.getElementById('msg');
   var response = JSON.parse(xhr.responseText);
   msg.innerText = 'oList loaded.';
-  var pane = document.getElementById('ctlpane');
+  var pane = document.getElementById('plotmenu');
+  pane.style.display = 'none';
   for (jsfnam in response) {
     if (jsfnam == 'stop') break;
     // these MUST be let (block-local)
     let elb = document.createElement('button');
+    elb.setAttribute('class', 'btn');
     let vnam = response[jsfnam].replace(/\/\d\d\d\d-\d\d-/, ' ');
     let url = 'http://toyoda-eizi.net/2018/sfcmap/' + jsfnam;
     elb.addEventListener('click',
@@ -269,10 +291,28 @@ function init() {
   yhr.addEventListener("load", function() { obslist(mapctx, yhr); });
 }
 
+function plottg() {
+  var div = document.getElementById("plotmenu");
+  div.style.display = div.style.display == 'none' ? '' : 'none';
+}
+
+function analtg() {
+  var div = document.getElementById("analmenu");
+  div.style.display = div.style.display == 'none' ? '' : 'none';
+}
+
 document.addEventListener("DOMContentLoaded", init);
 </script>
 </head>
-<body style="margin:0; padding:0;">
-<div><span id="msg">Loading list...</span> <span id="ctlpane" /></div>
-<div id="mapid" style="margin:0;padding:0;width:100%;height:95%;">（ここに地図が描画される）</div>
+<body>
+<div id="headarea">
+  <span id="ctlpane">
+    <button id="plottg" onclick="plottg();">Plots menu</button>
+    <button id="analtg" onclick="analtg();">Analysis menu</button>
+  </span>
+  <span id="msg">Loading list...</span>
+</div>
+<div id="plotmenu"></div>
+<div id="analmenu"></div>
+<div id="mapid">/map to be loaded here/</div>
 </body></html>
