@@ -202,15 +202,6 @@ function filelist(mapctx, xhr) {
     elb.innerText = vnam;
     pane.appendChild(elb);
   }
-  let pfb = document.createElement('button');
-  let vnam = 'wp wind 925hPa';
-  let url = 'http://toyoda-eizi.net/2018/uppermaps/wpjp.json';
-  pfb.addEventListener('click', function (){
-    add_wpjp(mapctx, url);
-    pfb.disabled = true;
-  });
-  pfb.innerText = vnam;
-  pane.appendChild(pfb);
   msg.innerText = 'Choose buttons:';
 }
 
@@ -236,6 +227,16 @@ function obslist(mapctx, xhr) {
     elb.innerText = vnam;
     pane.appendChild(elb);
   }
+  // WP data
+  let pfb = document.createElement('button');
+  let vnam = 'wp wind 925hPa';
+  let url = 'http://toyoda-eizi.net/2018/uppermaps/wpjp.json';
+  pfb.addEventListener('click', function (){
+    add_wpjp(mapctx, url);
+    pfb.disabled = true;
+  });
+  pfb.innerText = vnam;
+  pane.appendChild(pfb);
 }
 
 function init() {
