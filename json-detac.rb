@@ -113,9 +113,14 @@ class App
 	      "dd" => dd,
 	      "ff" => strtoi(h['ff']),
 	      "N" => strtoi(h['N']),
+	      "ww" => strtoi(h['ww']),
 	      "h" => hha
 	    }
 	  }
+	  t = strtoi(h['TTT'])
+	  r['properties']['T'] = Float('%4.1f' % (t * 0.1)) if t
+	  t = strtoi(h['Td.3'])
+	  r['properties']['Td'] = Float('%4.1f' % (t * 0.1)) if t
 	  @result.push r
 	}
       }

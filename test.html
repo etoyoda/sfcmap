@@ -151,7 +151,7 @@ function winddata(mapctx, xhr, tl) {
       iopt = { iconUrl: url, iconSize: [64, 64], iconAnchor: [32, 32] };
     }
     var opt = {icon: L.icon(iopt), title: bn};
-    var ptx = '<p>Station <a href="http://toyoda-eizi.net/wmo9/vola/idxnum/{stnid}">{stnid} ({name})</a><br>dd:{dd} ff:{ff} N:{N}';
+    var ptx = '<p>Station <a href="http://toyoda-eizi.net/wmo9/vola/idxnum/{stnid}">{stnid} ({name})</a><br>dd:{dd} ff:{ff} N:{N} T:{T} Td:{Td} ww:{ww}';
     ptx = ptx.replace(/{(\w+)}/g, function(m,p1){ return tup[p1]; });
     let pos = stations[istn].geometry.coordinates;
     L.marker(pos, opt).bindPopup(ptx).addTo(ly);
