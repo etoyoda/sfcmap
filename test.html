@@ -20,9 +20,11 @@ div#headarea { margin:0; padding:0; width:100%; height:22px; }
 div#mapid { position:absolute; top:22px; left:0;
   margin:0; padding:0; width:100%; height:95%; }
 div#plotmenu {
-  z-index:940; position:absolute; top:15%; left:10%; width:80%; }
+  z-index:940; position:absolute; top:15%; left:8%; width:80%; }
 div#analmenu {
   z-index:930; position:absolute; top:30%; left:8%; width:80%;  }
+div#tilemenu {
+  z-index:920; position:absolute; top:45%; left:8%; width:80%;  }
 .btn { padding: 4; }
 .plotT5 {
   -moz-filter: hue-rotate(-40deg) brightness(500%);
@@ -228,6 +230,17 @@ function addwind(mapctx, url, vnam) {
   xhr.addEventListener("load", function() { winddata(mapctx, xhr, vnam); });
 }
 
+function addtile(mapctx, url, vnam, aurl) {
+  var ly = L.tileLayer(
+    url + '/{z}/{x}/{y}.png', {
+      attribution:
+      '<a href="'+aurl+'">'+vnam+'</a>',
+      maxZoom: 7, maxNativeZoom: 4, minNativeZoom: 4
+  });
+  ly.addTo(mapctx.map);
+  mapctx.ly.addOverlay(ly, vnam);
+}
+
 function filelist(mapctx, xhr) {
   var msg = document.getElementById('msg');
   var response = JSON.parse(xhr.responseText);
@@ -287,6 +300,31 @@ function obslist(mapctx, xhr) {
   pane.appendChild(pfb);
 }
 
+function tilelist(mapctx, xhr) {
+  var msg = document.getElementById('msg');
+  var response = JSON.parse(xhr.responseText);
+  msg.innerText = 'tList loaded.';
+  var pane = document.getElementById('tilemenu');
+  pane.style.display = 'none';
+  for (jsfnam in response) {
+    if (jsfnam == 'stop') break;
+    // these MUST be let (block-local)
+    let elb = document.createElement('button');
+    elb.setAttribute('class', 'btn');
+    let vnam = response[jsfnam].vn.replace(/\/\d\d\d\d-\d\d-/, ' ');
+    let url = 'http://toyoda-eizi.net/2018/imgproj/' + jsfnam;
+    let aurl = response[jsfnam].url;
+    elb.addEventListener('click',
+      function (){
+        addtile(mapctx, url, vnam, aurl);
+	elb.disabled = true;
+      }
+    );
+    elb.innerText = vnam;
+    pane.appendChild(elb);
+  }
+}
+
 function init() {
   var canv = document.getElementById('mapid');
   canv.style.csstext = 'height: ' + (window.innerHeight - 22) + ';';
@@ -308,12 +346,6 @@ function init() {
     '<a href="https://maps.gsi.go.jp/development/ichiran.html">地理院タイル</a>(写真)',
     maxZoom: 7
   });
-  var tile4 = L.tileLayer(
-  'http://toyoda-eizi.net/2018/imgproj/gmsir/{z}/{x}/{y}.png', {
-    attribution:
-    '<a href="https://www.jma.go.jp/jp/gms/large.html?area=6">JMA</a>',
-    maxZoom: 7, maxNativeZoom: 4, minNativeZoom: 4
-  });
   var mymap = L.map('mapid', {
     center: [36.0, 135.0],
     zoom: 4,
@@ -322,8 +354,7 @@ function init() {
   var basemaps = {
     "淡色地図": tile1,
     "English": tile2,
-    "写真": tile3,
-    "Himawari": tile4
+    "写真": tile3
   };
   var lyctrl = L.control.layers(basemaps, {});
   lyctrl.addTo(mymap);
@@ -337,6 +368,7 @@ function init() {
   }
   xhr.send();
   xhr.addEventListener("load", function() { filelist(mapctx, xhr); });
+  //
   var urlobs = 'http://toyoda-eizi.net/2018/sfcmap/yobslist.json';
   var yhr = new XMLHttpRequest();
   yhr.open('GET', urlobs);
@@ -345,6 +377,15 @@ function init() {
   }
   yhr.send();
   yhr.addEventListener("load", function() { obslist(mapctx, yhr); });
+  //
+  var urltil = 'http://toyoda-eizi.net/2018/imgproj/tiles.json';
+  var zhr = new XMLHttpRequest();
+  zhr.open('GET', urltil);
+  if (navigator.userAgent.indexOf('Trident') == -1) {
+    zhr.responseType = 'text';
+  }
+  zhr.send();
+  zhr.addEventListener("load", function() { tilelist(mapctx, zhr); });
 }
 
 function plottg() {
@@ -370,11 +411,13 @@ document.addEventListener("DOMContentLoaded", init);
   <span id="ctlpane">
     <button id="plottg" onclick="plottg();">Plots menu</button>
     <button id="analtg" onclick="analtg();">Analysis menu</button>
+    <button id="tiletg" onclick="tiletg();">Tile menu</button>
   </span>
   <span id="msg">Loading list...</span>
 </div>
 <div id="plotmenu"></div>
 <div id="analmenu"></div>
+<div id="tilemenu"></div>
 </div>
 <div id="mapid">/map to be loaded here/</div>
 </body></html>
