@@ -94,7 +94,7 @@ class App
 	    end
 	    lat *= 0.1
 	    lon *= 0.1
-	    lon += 360 if lon < 0
+	    lon += 360 if lon < -30
 	    pos = [lat, lon]
 	    name = stnid
 	  end

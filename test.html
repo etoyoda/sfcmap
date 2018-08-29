@@ -27,23 +27,23 @@ div#tilemenu {
   z-index:920; position:absolute; top:45%; left:8%; width:80%;  }
 .btn { padding: 4; }
 .plotT5 {
-  -moz-filter: hue-rotate(-40deg) brightness(500%);
-  -webkit-filter: hue-rotate(-40deg) brightness(500%);
-  filter: hue-rotate(-40deg) brightness(500%);
+  -moz-filter: hue-rotate(-50deg) brightness(800%);
+  -webkit-filter: hue-rotate(-50deg) brightness(800%);
+  filter: hue-rotate(-50deg) brightness(800%);
 }
 .plotT10 {
-  -moz-filter: hue-rotate(-20deg) brightness(300%);
-  -webkit-filter: hue-rotate(-20deg) brightness(300%);
-  filter: hue-rotate(-20deg) brightness(300%);
+  -moz-filter: hue-rotate(-20deg) brightness(400%);
+  -webkit-filter: hue-rotate(-20deg) brightness(400%);
+  filter: hue-rotate(-20deg) brightness(400%);
 }
 .plotT25 {
-  -moz-filter: hue-rotate(110deg) brightness(300%);
-  -webkit-filter: hue-rotate(110deg) brightness(300%);
-  filter: hue-rotate(110deg) brightness(300%);
+  -moz-filter: hue-rotate(150deg) brightness(400%);
+  -webkit-filter: hue-rotate(150deg) brightness(400%);
+  filter: hue-rotate(150deg) brightness(400%);
 }
 .plotT30 {
-  -moz-filter: hue-rotate(60deg) brightness(400%);
-  -webkit-filter: hue-rotate(60deg) brightness(400%);
+  -moz-filter: hue-rotate(70deg) brightness(400%);
+  -webkit-filter: hue-rotate(70deg) brightness(400%);
   filter: hue-rotate(60deg) brightness(400%);
 }
 .plotRain {
@@ -52,9 +52,9 @@ div#tilemenu {
   filter: hue-rotate(-90deg) brightness(500%);
 }
 .plotFog {
-  -moz-filter: hue-rotate(180deg) brightness(300%);
-  -webkit-filter: hue-rotate(180deg) brightness(300%);
-  filter: hue-rotate(180deg) brightness(300%);
+  -moz-filter: hue-rotate(180deg) brightness(800%);
+  -webkit-filter: hue-rotate(180deg) brightness(800%);
+  filter: hue-rotate(180deg) brightness(800%);
 }
 </style>
 <script type="text/javascript">
@@ -187,10 +187,10 @@ function winddata(mapctx, xhr, tl) {
 	iopt.className = 'plotT30';
       } else if (tup.T >= 25.0) {
 	iopt.className = 'plotT25';
-      } else if (tup.T <= 10.0) {
-	iopt.className = 'plotT10';
       } else if (tup.T <= 5.0) {
 	iopt.className = 'plotT5';
+      } else if (tup.T <= 10.0) {
+	iopt.className = 'plotT10';
       }
     }
     if (tup.ww) {
