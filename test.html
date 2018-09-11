@@ -16,15 +16,12 @@ div.diH { color: blue; font-size: 18pt; }
 div.diFOG { color: yellow; font-size: 18pt; }
 div.diICING { color: green; font-size: 18pt; }
 div.diSEAICE { color: green; font-size: 18pt; }
-div#headarea { margin:0; padding:0; width:100%; height:22px; }
-div#mapid { position:absolute; top:22px; left:0;
-  margin:0; padding:0; width:100%; height:95%; }
-div#plotmenu {
-  z-index:940; position:absolute; top:15%; left:8%; width:80%; }
-div#analmenu {
-  z-index:930; position:absolute; top:30%; left:8%; width:80%;  }
-div#tilemenu {
-  z-index:920; position:absolute; top:45%; left:8%; width:80%;  }
+div#mapid { position:absolute; top:0px; left:0;
+  margin:0; padding:0; width:100%; height:100%; }
+div#datamenu {
+  z-index:940; position:absolute; top:20px; left:40px; width:90%; }
+div#openmenu {
+  z-index:920; position:absolute; top:80px; left:10px; width:50px; }
 .btn { padding: 4; }
 .plotT5 {
   -moz-filter: hue-rotate(-50deg) brightness(800%);
@@ -242,11 +239,9 @@ function addtile(mapctx, url, vnam, aurl) {
 }
 
 function filelist(mapctx, xhr) {
-  var msg = document.getElementById('msg');
   var response = JSON.parse(xhr.responseText);
-  msg.innerText = 'mList loaded.';
   var pane = document.getElementById('analmenu');
-  pane.style.display = 'none';
+  // pane.style.display = 'none';
   for (jsfnam in response) {
     if (jsfnam == 'stop') break;
     // these MUST be let (block-local)
@@ -263,15 +258,12 @@ function filelist(mapctx, xhr) {
     elb.innerText = vnam;
     pane.appendChild(elb);
   }
-  msg.innerText = 'Choose buttons:';
 }
 
 function obslist(mapctx, xhr) {
-  var msg = document.getElementById('msg');
   var response = JSON.parse(xhr.responseText);
-  msg.innerText = 'oList loaded.';
   var pane = document.getElementById('plotmenu');
-  pane.style.display = 'none';
+  // pane.style.display = 'none';
   for (jsfnam in response) {
     if (jsfnam == 'stop') break;
     // these MUST be let (block-local)
@@ -301,11 +293,9 @@ function obslist(mapctx, xhr) {
 }
 
 function tilelist(mapctx, xhr) {
-  var msg = document.getElementById('msg');
   var response = JSON.parse(xhr.responseText);
-  msg.innerText = 'tList loaded.';
   var pane = document.getElementById('tilemenu');
-  pane.style.display = 'none';
+  // pane.style.display = 'none';
   for (jsfnam in response) {
     if (jsfnam == 'stop') break;
     // these MUST be let (block-local)
@@ -386,38 +376,43 @@ function init() {
   }
   zhr.send();
   zhr.addEventListener("load", function() { tilelist(mapctx, zhr); });
+  var div = document.getElementById("datamenu");
+  div.style.display = 'none';
 }
 
-function plottg() {
-  var div = document.getElementById("plotmenu");
-  div.style.display = div.style.display == 'none' ? '' : 'none';
+function save() {
+  alert("unimplemented");
 }
 
-function analtg() {
-  var div = document.getElementById("analmenu");
-  div.style.display = div.style.display == 'none' ? '' : 'none';
+function openmenu() {
+  var div = document.getElementById("datamenu");
+  div.style.display = '';
 }
 
-function tiletg() {
-  var div = document.getElementById("tilemenu");
-  div.style.display = div.style.display == 'none' ? '' : 'none';
+function closemenu() {
+  var div = document.getElementById("datamenu");
+  div.style.display = 'none';
 }
 
 document.addEventListener("DOMContentLoaded", init);
 </script>
 </head>
 <body>
-<div id="headarea">
-  <span id="ctlpane">
-    <button id="plottg" onclick="plottg();">Plots menu</button>
-    <button id="analtg" onclick="analtg();">Analysis menu</button>
-    <button id="tiletg" onclick="tiletg();">Tile menu</button>
-  </span>
-  <span id="msg">Loading list...</span>
+<div id="openmenu">
+  <button id="openbt" onclick="openmenu();"
+    title="open data menu" class="btn">&#x1F4C2;</a>
+  <br />
+  <button id="save" onclick="save();" 
+    title="save image" class="btn">&#x1F4F7;</a>
 </div>
-<div id="plotmenu"></div>
-<div id="analmenu"></div>
-<div id="tilemenu"></div>
+<div id="datamenu">
+  <div id="headarea">
+    <span>Data Layers</span>
+    <button id="closebt" onclick="closemenu();" title="close" class="btn">&#x2716;</a>
+  </div>
+  <div id="plotmenu"></div>
+  <div id="analmenu"></div>
+  <div id="tilemenu"></div>
 </div>
 <div id="mapid">/map to be loaded here/</div>
 </body></html>
