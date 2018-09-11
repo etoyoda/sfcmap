@@ -8,6 +8,7 @@
 <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"
    integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log=="
    crossorigin=""></script>
+<script src="../leaflet-easyPrint/dist/bundle.js"></script>
 <style>
 html { margin:0; padding:0; }
 body { margin:0; padding:0; }
@@ -21,7 +22,7 @@ div#mapid { position:absolute; top:0px; left:0;
 div#datamenu {
   z-index:940; position:absolute; top:20px; left:40px; width:90%; }
 div#openmenu {
-  z-index:920; position:absolute; top:80px; left:10px; width:50px; }
+  z-index:920; position:absolute; top:120px; left:10px; width:50px; }
 .btn { padding: 4; }
 .plotT5 {
   -moz-filter: hue-rotate(-50deg) brightness(800%);
@@ -378,10 +379,13 @@ function init() {
   zhr.addEventListener("load", function() { tilelist(mapctx, zhr); });
   var div = document.getElementById("datamenu");
   div.style.display = 'none';
-}
-
-function save() {
-  alert("unimplemented");
+  //
+  var printer = L.easyPrint({
+    tileLayer: tile2,
+    sizeModes: ['Current'],
+    filename: 'sfcmap',
+    exportOnly: true
+  }).addTo(mymap);
 }
 
 function openmenu() {
@@ -400,10 +404,7 @@ document.addEventListener("DOMContentLoaded", init);
 <body>
 <div id="openmenu">
   <button id="openbt" onclick="openmenu();"
-    title="open data menu" class="btn">&#x1F4C2;</a>
-  <br />
-  <button id="save" onclick="save();" 
-    title="save image" class="btn">&#x1F4F7;</a>
+    title="open data menu" class="btn">&#x1F4C2;</button>
 </div>
 <div id="datamenu">
   <div id="headarea">
