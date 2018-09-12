@@ -20,10 +20,11 @@ div.diSEAICE { color: green; font-size: 18pt; }
 div#mapid { position:absolute; top:0px; left:0;
   margin:0; padding:0; width:100%; height:100%; }
 div#datamenu {
-  z-index:940; position:absolute; top:20px; left:40px; width:90%; }
-div#openmenu {
+  z-index:940; position:absolute; top:20px; left:45px; width:90%; }
+div#togglemenu {
   z-index:920; position:absolute; top:120px; left:10px; width:50px; }
 .btn { padding: 4; }
+.btnx { padding: 8; }
 .plotT5 {
   -moz-filter: hue-rotate(-50deg) brightness(800%);
   -webkit-filter: hue-rotate(-50deg) brightness(800%);
@@ -388,9 +389,9 @@ function init() {
   }).addTo(mymap);
 }
 
-function openmenu() {
+function togglemenu() {
   var div = document.getElementById("datamenu");
-  div.style.display = '';
+  div.style.display = (div.style.display == '') ? 'none' : '';
 }
 
 function closemenu() {
@@ -402,18 +403,17 @@ document.addEventListener("DOMContentLoaded", init);
 </script>
 </head>
 <body>
-<div id="openmenu">
-  <button id="openbt" onclick="openmenu();"
-    title="open data menu" class="btn">&#x1F4C2;</button>
+<div id="togglemenu">
+  <button onclick="togglemenu();" title="open data menu" class="btnx">&#x1F4C2;</button>
 </div>
 <div id="datamenu">
   <div id="headarea">
     <span>Data Layers</span>
     <button id="closebt" onclick="closemenu();" title="close" class="btn">&#x2716;</a>
   </div>
-  <div id="plotmenu"></div>
-  <div id="analmenu"></div>
-  <div id="tilemenu"></div>
+  <div id="plotmenu"><em>Plot:</em></div>
+  <div id="analmenu"><em>Analysis:</em></div>
+  <div id="tilemenu"><em>Tiles:</em></div>
 </div>
 <div id="mapid">/map to be loaded here/</div>
 </body></html>
