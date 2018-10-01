@@ -138,6 +138,15 @@ function wpjpdata(mapctx, xhr) {
     if (dd == 0) { dd = 36; }
     var ff = Math.floor((tup.ff + 1.25) / 2.5) * 5;
     if ((ff == 0) && (tup.ff > 0.5)) { ff = 5; }
+    switch (ff) {
+      case 105:  ff = 110;  break;
+      case 115:  ff = 120;  break;
+      case 125:  ff = 130;  break;
+      case 135:  ff = 140;  break;
+      case 145:  ff = 150;  break;
+      case 155: case 160: case 165: case 170:  ff = 150;  break;
+    }
+    if (ff > 170) { ff = 200; }
     if (ff == 0) { dd = 0; }
     var bn = 'd' + dd + 'f' + ff + '.png';
     var url = 'http://toyoda-eizi.net/2018/wxsymbols/img/' + bn;
