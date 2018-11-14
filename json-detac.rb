@@ -63,7 +63,7 @@ class App
 
   def detacload
     @detac.each {|detac|
-      File.open(detac, "r") {|ifp|
+      File.open(detac, "r:ASCII-8BIT") {|ifp|
         ifp.each_line{|line|
 	  h = {}
 	  line.chomp.split(/\t/).each{|kvp|
