@@ -83,18 +83,37 @@ class App
     end
   end
 
-  def mktime h
-    d = strtoi(h['YY']) || @bt.day
-    h = strtoi(h['GG']) || @bt.hour
-    # 観測は通常現在時刻 @bt と同じまたは前の日だが、前月末の場合そうでない
-    xt = @bt
-    if h > @bt.hour and h > 12 then
-      xt -= 86400
+  DAY = 86400
+
+  def mktime dcd
+    d = strtoi(dcd['YY'])
+    h = strtoi(dcd['GG/9']) || strtoi(dcd['GG'])
+    n = strtoi(dcd['gg']) || 0
+    unless d and h
+      if / (\d\d)(\d\d)(\d\d)/ === dcd['AHL'] then
+        d = $1.to_i
+        h = $2.to_i
+        n = $3.to_i
+      else
+        $stderr.puts dcd.inspect
+        raise
+        return 'unknown'
+      end
     end
-    y = xt.year
-    m = xt.mon
+    d = [[d, 31].min, 1].max
+    xt = @bt
+    # 未来日付の観測はないので、 @bt より遡る
+    xt -= DAY while d != xt.day
+    xt -= DAY if h == 23 and dcd['GG'] == '0'
     d = xt.day
-    Time.gm(y, m, d, h).strftime('%Y-%m-%dT%H:%MZ')
+    m = xt.mon
+    y = xt.year
+    begin
+      return Time.gm(y, m, d, h, n).strftime('%Y-%m-%dT%H:%MZ')
+    rescue ArgumentError
+      $stderr.puts [y, m, d, h, n].inspect
+      return "unknown"
+    end
   end
 
   def detacload
@@ -118,7 +137,7 @@ class App
           xstnid = pos = name = nil
           if 'AAXX' == h['@MiMj'] then
             unless @sdb[stnid]
-              $stderr.puts "fixed-obs #{stnid} unlocatable"
+              $stderr.puts "fixed #{stnid} unlocatable"
               next
             end
             xstnid = stnid
@@ -129,7 +148,7 @@ class App
             lat = strtoi(h['La.3'])
             lon = strtoi(h['Lo.4'])
             unless lat and lon
-              $stderr.puts "obs #{stnid} unlocatable"
+              $stderr.puts "mobile #{stnid} unlocatable"
               next
             end
             lat *= 0.1
@@ -137,6 +156,7 @@ class App
             lon += 360 if lon < -30
             pos = [lat, lon]
           end
+          key = [mktime(h), 'sfc', xstnid].join('/')
           dd = strtoi(h['dd'])
           dd = nil if dd == 99 or dd == 90
           next unless dd
@@ -168,7 +188,6 @@ class App
           ch = strtoi(h['CH']) ; r['CH'] = ch if ch
           r['#'] = name if name
           r['ahl'] = h['AHL'] if h['AHL']
-          key = [mktime(h), 'sfc', xstnid].join('/')
           @result.push [key, r]
         }
       }
