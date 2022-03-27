@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euo pipefail
-TZ=UTC
+export TZ=UTC
 today=$(date +%Y-%m-%d)
 datadir=/nwp/p0/${today}
 if test ! -d ${datadir} ; then
