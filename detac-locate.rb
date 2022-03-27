@@ -100,11 +100,17 @@ class App
             end
             @duptab[stnid] = 1
           end
-          pos = name = nil
-          if @sdb[stnid] then
+          xstnid = pos = name = nil
+          if 'AAXX' == h['@MiMj'] then
+            unless @sdb[stnid]
+              $stderr.puts "fixed-obs #{stnid} unlocatable"
+              next
+            end
+            xstnid = stnid
             pos = @sdb[stnid]['pos']
             name = @sdb[stnid]['name']
           else
+            xstnid = "v#{stnid}"
             lat = strtoi(h['La.3'])
             lon = strtoi(h['Lo.4'])
             unless lat and lon
@@ -119,7 +125,6 @@ class App
           dd = strtoi(h['dd'])
           dd = nil if dd == 99 or dd == 90
           next unless dd
-          xstnid = if 'BBXX' == h['@MiMj'] then 'v' + stnid else stnid end
           r = {
             "@" => xstnid,
             "La" => pos[0],
@@ -154,10 +159,10 @@ class App
   end
 
   def saveto ofp
-    @result.size.times {|i|
-      json = @result[i].to_json.gsub(/000000+\d,/, ',')
+    for ent in @result
+      json = ent.to_json.gsub(/000000+\d,/, ',')
       ofp.puts json
-    }
+    end
   end
 
   def output
