@@ -10,3 +10,4 @@ test -d ${datadir}
 test -f ${datadir}/obsan-${today}.tar
 ruby untar-unziplike.rb ^A_SM ${datadir}/obsan-${today}.tar > zunzip.txt
 ruby detac.rb zunzip.txt > zdetac.txt
+ruby detac-locate.rb zdetac.txt > zloctac.txt 2> zloctac.log
