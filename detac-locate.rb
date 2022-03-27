@@ -5,12 +5,12 @@ class App
   def initialize args
     @stab = []
     @detac = []
-    @vt = @ofn = nil
+    @bt = @ofn = nil
     args.each{|arg|
       case arg
       when /^-nsd=/ then @stab.push($')
       when /^-o=/ then @ofn = $'
-      when /^-vt=/ then @vt = $'
+      when /^-bt=/ then @bt = $'
       else @detac.push(arg)
       end
     }
@@ -131,6 +131,8 @@ class App
             "Lo" => pos[1],
             "d" => dd
           }
+          r['ix'] = h['ix']
+          v = vis(h['VV']) ; r['V'] = v if v
           f = strtoi(h['ff'])
           f = (f * 5.1444).floor * 0.1 if f and /[34]/ === h['iw']
           r['f'] = f if f
@@ -149,7 +151,6 @@ class App
           cl = strtoi(h['CL']) ; r['CL'] = cl if cl
           cm = strtoi(h['CM']) ; r['CM'] = cm if cm
           ch = strtoi(h['CH']) ; r['CH'] = ch if ch
-          v = vis(h['VV']) ; r['V'] = v if v
           r['#'] = name if name
           r['ahl'] = h['AHL'] if h['AHL']
           @result.push r
