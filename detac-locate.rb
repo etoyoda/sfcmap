@@ -61,6 +61,27 @@ class App
     end
   end
 
+  def vis vv
+    iv = strtoi(vv)
+    case iv
+    when 0 then 50
+    when 1..55 then iv * 100
+    when 56..80 then (iv - 50) * 1000
+    when 81..89 then (iv - 74) * 5000
+    when 90 then 25
+    when 91 then 50
+    when 92 then 200
+    when 93 then 500
+    when 94 then 1000
+    when 95 then 2000
+    when 96 then 4000
+    when 97 then 10_000
+    when 98 then 20_000
+    when 99 then 50_000
+    else nil
+    end
+  end
+
   def detacload
     @detac.each {|detac|
       File.open(detac, "r:ASCII-8BIT") {|ifp|
@@ -123,6 +144,7 @@ class App
           cl = strtoi(h['CL']) ; r['CL'] = cl if cl
           cm = strtoi(h['CM']) ; r['CM'] = cm if cm
           ch = strtoi(h['CH']) ; r['CH'] = ch if ch
+          v = vis(h['VV']) ; r['V'] = v if v
           r['#'] = name if name
           r['ahl'] = h['AHL'] if h['AHL']
           @result.push r
