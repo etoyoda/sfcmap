@@ -313,7 +313,7 @@ class Tac
 	  @dcd['CM'] = Tac.atoi(group[3, 1])
 	  @dcd['CH'] = Tac.atoi(group[4, 1])
 	when /^9[0-9\/]{4}$/n then
-	  @dcd['GG'] = Tac.atoi(group[1, 2])
+	  @dcd['GG/9'] = Tac.atoi(group[1, 2])
 	  @dcd['gg'] = Tac.atoi(group[3, 2])
 	when /^\/\/\/\/\/$/n then
 	  :ignore
