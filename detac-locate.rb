@@ -48,9 +48,7 @@ class App
           #47;582;----;Akita;;Japan;2;39-43N;140-06E;39-43N;140-06E;6;21;P^M
           i2,i3,c4,n,st,ct,ra,la,lo,la,lo2,la2,hha,hp,rem = line.chomp.split(/;/,15)
           pos = latlon(la, lo) or next
-          next if hha.empty?
-          h = hha.to_i
-          @sdb[i2+i3] = { 'name' => n, 'pos' => pos, 'h' => h }
+          @sdb[i2+i3] = { 'name' => n, 'pos' => pos }
         }
       }
     }
@@ -81,13 +79,11 @@ class App
             end
             @duptab[stnid] = 1
           end
-          pos = name = hha = nil
+          pos = name = nil
           if @sdb[stnid] then
             pos = @sdb[stnid]['pos']
             name = @sdb[stnid]['name']
-            hha = strtoi(@sdb[stnid]['h'])
           else
-            hha = 0
             lat = strtoi(h['La.3'])
             lon = strtoi(h['Lo.4'])
             unless lat and lon
@@ -107,8 +103,7 @@ class App
             "@" => xstnid,
             "La" => pos[0],
             "Lo" => pos[1],
-            "d" => dd,
-            "h" => hha
+            "d" => dd
           }
           f = strtoi(h['ff'])
           f = (f * 5.1444).floor * 0.1 if f and /[34]/ === h['iw']
