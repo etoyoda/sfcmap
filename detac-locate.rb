@@ -102,25 +102,18 @@ class App
 	  dd = nil if dd == 99 or dd == 90
 	  next unless dd
 	  r = {
-	    "type" => "Feature",
-	    "geometry" => {
-	      "type" => "Point",
-	      "coordinates" => pos
-	    },
-	    "properties" => {
-	      "stnid" => stnid,
-	      "name" => name,
-	      "dd" => dd,
-	      "ff" => strtoi(h['ff']),
-	      "N" => strtoi(h['N']),
-	      "ww" => strtoi(h['ww']),
-	      "h" => hha
-	    }
+	    "stnid" => stnid,
+	    "name" => name,
+	    "dd" => dd,
+	    "ff" => strtoi(h['ff']),
+	    "N" => strtoi(h['N']),
+	    "ww" => strtoi(h['ww']),
+	    "h" => hha
 	  }
 	  t = strtoi(h['TTT'])
-	  r['properties']['T'] = Float('%4.1f' % (t * 0.1)) if t
+	  r['T'] = Float('%4.1f' % (t * 0.1)) if t
 	  t = strtoi(h['Td.3'])
-	  r['properties']['Td'] = Float('%4.1f' % (t * 0.1)) if t
+	  r['Td'] = Float('%4.1f' % (t * 0.1)) if t
 	  @result.push r
 	}
       }
@@ -128,14 +121,9 @@ class App
   end
 
   def saveto ofp
-    ofp.write "{ \"type\": \"FeatureCollection\",\n"
-    ofp.write "\"x-validtime\": #{@vt.to_json},\n" if @vt
-    ofp.write "\"features\": [\n"
     @result.size.times {|i|
-      ofp.write ",\n" unless i.zero?
-      ofp.write @result[i].to_json
+      ofp.puts @result[i].to_json
     }
-    ofp.write "]}\n"
   end
 
   def output
