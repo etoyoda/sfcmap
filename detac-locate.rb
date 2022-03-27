@@ -14,6 +14,7 @@ class App
       else @detac.push(arg)
       end
     }
+    @bt = Time.now.utc unless @bt
     @sdb =  {}
     @result = []
     @duptab = {}
@@ -80,6 +81,20 @@ class App
     when 99 then 50_000
     else nil
     end
+  end
+
+  def mktime h
+    d = strtoi(h['YY']) || @bt.day
+    h = strtoi(h['GG']) || @bt.hour
+    # 観測は通常現在時刻 @bt と同じまたは前の日だが、前月末の場合そうでない
+    xt = @bt
+    if h > @bt.hour and h > 12 then
+      xt -= 86400
+    end
+    y = xt.year
+    m = xt.mon
+    d = xt.day
+    Time.gm(y, m, d, h).strftime('%Y-%m-%dT%H:%MZ')
   end
 
   def detacload
@@ -153,16 +168,17 @@ class App
           ch = strtoi(h['CH']) ; r['CH'] = ch if ch
           r['#'] = name if name
           r['ahl'] = h['AHL'] if h['AHL']
-          @result.push r
+          key = [mktime(h), 'sfc', xstnid].join('/')
+          @result.push [key, r]
         }
       }
     }
   end
 
   def saveto ofp
-    for ent in @result
+    for key, ent in @result
       json = ent.to_json.gsub(/000000+\d,/, ',')
-      ofp.puts json
+      ofp.puts([key, json].join(' '))
     end
   end
 
