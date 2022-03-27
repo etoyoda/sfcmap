@@ -21,8 +21,10 @@ class App
 
   def nwsangle(str)
     case str
-    when /^(\d+)-(\d+)[NE]$/ then sprintf('%6.2f', $1.to_i + $2.to_i / 60.0).to_f
-    when /^(\d+)-(\d+)[WS]$/ then -sprintf('%6.2f', $1.to_i + $2.to_i / 60.0).to_f
+    when /^(\d+)-(\d+)[NE]$/ then
+      (($1.to_i + $2.to_i / 60.0) * 100 + 0.5).floor * 0.01
+    when /^(\d+)-(\d+)[WS]$/ then
+      (-($1.to_i + $2.to_i / 60.0) * 100 + 0.5).floor * 0.01
     else nil
     end
   end
@@ -96,24 +98,33 @@ class App
 	    lon *= 0.1
 	    lon += 360 if lon < -30
 	    pos = [lat, lon]
-	    name = stnid
 	  end
 	  dd = strtoi(h['dd'])
 	  dd = nil if dd == 99 or dd == 90
 	  next unless dd
 	  r = {
-	    "stnid" => stnid,
+	    "@" => stnid,
 	    "name" => name,
-	    "dd" => dd,
-	    "ff" => strtoi(h['ff']),
-	    "N" => strtoi(h['N']),
-	    "ww" => strtoi(h['ww']),
+	    "La" => pos[0],
+	    "Lo" => pos[1],
+	    "d" => dd,
+	    "f" => strtoi(h['ff']),
 	    "h" => hha
 	  }
+	  n = strtoi(h['N'])
+	  r['N'] = n if n
+	  w = strtoi(h['ww'])
+	  r['W'] = w if w
 	  t = strtoi(h['TTT'])
-	  r['T'] = Float('%4.1f' % (t * 0.1)) if t
+	  r['T'] = Float('%4.1f' % (t * 0.1 + 273.15)) if t
 	  t = strtoi(h['Td.3'])
-	  r['Td'] = Float('%4.1f' % (t * 0.1)) if t
+	  r['Td'] = Float('%4.1f' % (t * 0.1 + 273.15)) if t
+	  p4 = strtoi(h['P.4'])
+	  r['P'] = p4 * 0.1 if p4
+	  p0 = strtoi(h['P0.4'])
+	  r['P0'] = p0 * 0.1 if p0
+	  r['CL'] = strtoi(h['CL']) if h['CL']
+	  r['AHL'] = h['AHL'] if h['AHL']
 	  @result.push r
 	}
       }
@@ -122,7 +133,8 @@ class App
 
   def saveto ofp
     @result.size.times {|i|
-      ofp.puts @result[i].to_json
+      json = @result[i].to_json.gsub(/000000+\d,/, ',')
+      ofp.puts json
     }
   end
 
