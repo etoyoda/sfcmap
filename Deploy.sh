@@ -14,7 +14,7 @@ CONFIG
 fi
 : ${bindir:?} ${priv:?} ${etcdir:?}
 
-target="run-detac.sh detac.rb"
+target="run-detac.sh detac.rb untar-unziplike.rb detac-locate.rb"
 
 sudo -u $priv install -m 0755 $target $bindir
 sudo -u $priv install -d $etcdir
