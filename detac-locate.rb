@@ -127,13 +127,6 @@ class App
           }
           stnid = h['stnid'] = h['@ID'].to_s
           next if stnid.empty?
-          if stnid != 'SHIP' then
-            if @duptab[stnid]
-              $stderr.puts "station #{stnid} dup"
-              next
-            end
-            @duptab[stnid] = 1
-          end
           xstnid = pos = name = nil
           if 'AAXX' == h['@MiMj'] then
             unless @sdb[stnid]
@@ -157,6 +150,13 @@ class App
             pos = [lat, lon]
           end
           key = [mktime(h), 'sfc', xstnid].join('/')
+          if stnid != 'SHIP' then
+            if @duptab[key]
+              $stderr.puts "station #{key} dup"
+              next
+            end
+            @duptab[key] = 1
+          end
           dd = strtoi(h['dd'])
           dd = nil if dd == 99 or dd == 90
           next unless dd
