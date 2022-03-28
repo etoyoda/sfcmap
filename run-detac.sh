@@ -17,6 +17,6 @@ if test ! -d ${datadir} ; then
 fi
 test -d ${datadir}
 test -f ${datadir}/obsan-${today}.tar
-ruby ${bindir}/untar-unziplike.rb '^A_S[MI]' ${datadir}/obsan-${today}.tar > ztac.txt
+ruby ${bindir}/untar-unziplike.rb '^A_S[MNI]' ${datadir}/obsan-${today}.tar > ztac.txt
 ruby ${bindir}/detac.rb ztac.txt > zdetac.txt
 ruby ${bindir}/detac-locate.rb -o=zloctac.txt -nsd=${etcdir}/nsd_bbsss.txt zdetac.txt 2> zloctac.log
