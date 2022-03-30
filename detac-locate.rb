@@ -172,7 +172,7 @@ class App
           f = (f * 5.1444).floor * 0.1 if f and /[34]/ === h['iw']
           r['f'] = f if f
           n = strtoi(h['N'])
-          r['N'] = n if n
+          r['N'] = (n * 12.5).floor if n
           w = strtoi(h['ww'])
           r['w'] = w if w
           t = strtoi(h['TTT'])
