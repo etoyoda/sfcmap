@@ -164,7 +164,7 @@ class App
             "@" => xstnid,
             "La" => pos[0],
             "Lo" => pos[1],
-            "d" => dd
+            "d" => dd * 10
           }
           r['ix'] = h['ix']
           v = vis(h['VV']) ; r['V'] = v if v
