@@ -171,8 +171,8 @@ class App
       r['f'] = strtof(h[sel]) if h.include? sel
       sel = "hhh@#{pl}"
       r['z'] = strtoi(h[sel]) if h.include? sel
-      sel = "TTTa@#{pl}"
-      r['T'] = Float('%4.1f' % (strtoi(h[sel]) * 0.1 + 273.15)) if h.include? sel
+      t = strtoi(h["TTTa@#{pl}"])
+      r['T'] = Float('%4.1f' % (t * 0.1 + 273.15)) if t
       sel = "DD@#{pl}"
       dd = strtoi(h[sel])
       if dd and r['T'] then
@@ -205,6 +205,7 @@ class App
             name = @sdb[stnid]['name']
           else
             xstnid = "v#{stnid}"
+            xstnid = "m#{stnid}" if 'IIAA' == h['@MiMj']
             lat = strtoi(h['La.3'])
             lon = strtoi(h['Lo.4'])
             unless lat and lon
