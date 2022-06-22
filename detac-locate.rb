@@ -62,6 +62,13 @@ class App
     end
   end
 
+  def strtof str
+    case str
+    when /^-?\d+(\.\d+)?$/ then str.to_f
+    else nil
+    end
+  end
+
   def vis vv
     iv = strtoi(vv)
     case iv
@@ -116,6 +123,65 @@ class App
     end
   end
 
+  def synopconv xstnid, h, pos, name
+    dd = strtoi(h['dd'])
+    dd = nil if dd == 99 or dd == 90
+    return nil unless dd
+    r = {
+      "@" => xstnid,
+      "La" => pos[0],
+      "Lo" => pos[1],
+      "d" => dd * 10
+    }
+    r['ix'] = h['ix']
+    v = vis(h['VV']) ; r['V'] = v if v
+    f = strtoi(h['ff'])
+    f = (f * 5.1444).floor * 0.1 if f and /[34]/ === h['iw']
+    r['f'] = f if f
+    n = strtoi(h['N'])
+    r['N'] = (n * 12.5).floor if n
+    w = strtoi(h['ww'])
+    r['w'] = w if w
+    t = strtoi(h['TTT'])
+    r['T'] = Float('%4.1f' % (t * 0.1 + 273.15)) if t
+    t = strtoi(h['Td.3'])
+    r['Td'] = Float('%4.1f' % (t * 0.1 + 273.15)) if t
+    p4 = strtoi(h['P.4'])
+    r['P'] = p4 * 10 if p4
+    p0 = strtoi(h['P0.4'])
+    r['P0'] = p0 * 10 if p0
+    cl = strtoi(h['CL']) ; r['CL'] = cl if cl
+    cm = strtoi(h['CM']) ; r['CM'] = cm if cm
+    ch = strtoi(h['CH']) ; r['CH'] = ch if ch
+    r['#'] = name if name
+    r['ahl'] = h['AHL'] if h['AHL']
+    r
+  end
+
+  def tempconv xstnid, h, pos
+    keys = h.keys.grep(/^dd@/).map{|s| s.sub(/^dd@/, '')}
+    keys.each{|pl|
+      r = {
+        "@" => xstnid,
+        "La" => pos[0],
+        "Lo" => pos[1],
+        'd' => strtoi(h["dd@#{pl}"])
+      }
+      sel = "fff@#{pl}"
+      r['f'] = strtof(h[sel]) if h.include? sel
+      sel = "hhh@#{pl}"
+      r['z'] = strtoi(h[sel]) if h.include? sel
+      sel = "TTTa@#{pl}"
+      r['T'] = strtoi(h[sel]) * 0.1 if h.include? sel
+      sel = "DD@#{pl}"
+      dd = strtoi(h[sel])
+      if dd and r['T'] then
+        r['Td'] = r['T'] - dd * 0.1
+      end
+      yield(pl.sub(/SURF/, 'sfc'), r)
+    }
+  end
+
   def detacload
     @detac.each {|detac|
       File.open(detac, "r:ASCII-8BIT") {|ifp|
@@ -157,38 +223,16 @@ class App
             end
             @duptab[key] = 1
           end
-          dd = strtoi(h['dd'])
-          dd = nil if dd == 99 or dd == 90
-          next unless dd
-          r = {
-            "@" => xstnid,
-            "La" => pos[0],
-            "Lo" => pos[1],
-            "d" => dd * 10
-          }
-          r['ix'] = h['ix']
-          v = vis(h['VV']) ; r['V'] = v if v
-          f = strtoi(h['ff'])
-          f = (f * 5.1444).floor * 0.1 if f and /[34]/ === h['iw']
-          r['f'] = f if f
-          n = strtoi(h['N'])
-          r['N'] = (n * 12.5).floor if n
-          w = strtoi(h['ww'])
-          r['w'] = w if w
-          t = strtoi(h['TTT'])
-          r['T'] = Float('%4.1f' % (t * 0.1 + 273.15)) if t
-          t = strtoi(h['Td.3'])
-          r['Td'] = Float('%4.1f' % (t * 0.1 + 273.15)) if t
-          p4 = strtoi(h['P.4'])
-          r['P'] = p4 * 10 if p4
-          p0 = strtoi(h['P0.4'])
-          r['P0'] = p0 * 10 if p0
-          cl = strtoi(h['CL']) ; r['CL'] = cl if cl
-          cm = strtoi(h['CM']) ; r['CM'] = cm if cm
-          ch = strtoi(h['CH']) ; r['CH'] = ch if ch
-          r['#'] = name if name
-          r['ahl'] = h['AHL'] if h['AHL']
-          @result.push [key, r]
+          if 'UUAA' == h['@MiMj'] then
+            tempconv(xstnid, h, pos) {|pl, r|
+              key2 = [mktime(h), pl, xstnid].join('/')
+              @result.push [key2, r]
+            }
+          else
+            r = synopconv(xstnid, h, pos, name)
+            next unless r
+            @result.push [key, r]
+          end
         }
       }
     }
@@ -196,7 +240,7 @@ class App
 
   def saveto ofp
     for key, ent in @result
-      json = ent.to_json.gsub(/000000+\d,/, ',')
+      json = ent.to_json.gsub(/000000+\d\b/, '')
       ofp.puts([key, json].join(' '))
     end
   end
