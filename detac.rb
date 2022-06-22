@@ -1103,6 +1103,13 @@ class Tac
     end
   end
 
+  class IIAA < UUAA
+    State = UUAA::State.dup
+    State[:QLLLL] = :MMMUU 
+    State[:MMMUU] = :hhhhi 
+    State[:hhhhi] = :temp2ini 
+  end
+
   class TTAA < UUAA
     State = UUAA::State.dup
     State[nil] = :YYGGi 
