@@ -194,7 +194,8 @@ class App
           stnid = h['stnid'] = h['@ID'].to_s
           next if stnid.empty?
           xstnid = pos = name = nil
-          if 'AAXX' == h['@MiMj'] then
+          case h['@MiMj']
+          when 'AAXX', 'TTAA' then
             unless @sdb[stnid]
               $stderr.puts "fixed #{stnid} unlocatable"
               next
@@ -223,7 +224,8 @@ class App
             end
             @duptab[key] = 1
           end
-          if 'UUAA' == h['@MiMj'] then
+          case h['@MiMj']
+          when 'TTAA','UUAA','IIAA' then
             tempconv(xstnid, h, pos) {|pl, r|
               key2 = [mktime(h), pl, xstnid].join('/')
               @result.push [key2, r]
