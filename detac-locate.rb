@@ -172,7 +172,7 @@ class App
       sel = "hhh@#{pl}"
       r['z'] = strtoi(h[sel]) if h.include? sel
       sel = "TTTa@#{pl}"
-      r['T'] = strtoi(h[sel]) * 0.1 if h.include? sel
+      r['T'] = Float('%4.1f' % (strtoi(h[sel]) * 0.1 + 273.15)) if h.include? sel
       sel = "DD@#{pl}"
       dd = strtoi(h[sel])
       if dd and r['T'] then
