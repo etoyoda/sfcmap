@@ -136,7 +136,7 @@ class App
     r['ix'] = h['ix']
     v = vis(h['VV']) ; r['V'] = v if v
     f = strtoi(h['ff'])
-    f = (f * 5.1444).floor * 0.1 if f and /[34]/ === h['iw']
+    f = Float('%4.1f' % (f * 0.51444)) if f and /[34]/ === h['iw']
     r['f'] = f if f
     n = strtoi(h['N'])
     r['N'] = (n * 12.5).floor if n
@@ -176,7 +176,7 @@ class App
       sel = "DD@#{pl}"
       dd = strtoi(h[sel])
       if dd and r['T'] then
-        r['Td'] = r['T'] - dd * 0.1
+        r['Td'] = Float('%4.1f' % (r['T'] - dd * 0.1))
       end
       yield(pl.sub(/SURF/, 'sfc'), r)
     }
@@ -243,7 +243,7 @@ class App
 
   def saveto ofp
     for key, ent in @result
-      json = ent.to_json.gsub(/000000+\d\b/, '')
+      json = ent.to_json.gsub(/\B000000+\d\b/, '')
       ofp.puts([key, json].join(' '))
     end
   end
